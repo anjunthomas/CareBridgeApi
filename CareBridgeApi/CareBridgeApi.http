@@ -4,3 +4,8 @@ GET {{CareBridgeApi_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+
+
+GET {{CareBridgeApi_HostAddress}}/api/patients
+Accept: application/json

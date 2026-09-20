@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using CareBridgeApi.Data;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using CareBridgeApi.Models;
+using System.Threading.Tasks;
 
 namespace CareBridgeApi.Controllers
 {
@@ -8,6 +11,13 @@ namespace CareBridgeApi.Controllers
     [ApiController]
     public class PatientsController : ControllerBase
     {
+        private readonly CareBridgeDBContext _context;
+
+        public PatientsController(CareBridgeDBContext context)
+        {
+            _context = context;
+        }
+        /*
         static private List<Patient> patients = new List<Patient>
         {
             new Patient
@@ -56,12 +66,14 @@ namespace CareBridgeApi.Controllers
                 PhoneNumber = null, // phone number can be nullable, so use null instead of an empty string
             },
         };
+        */
         [HttpGet]
-        public ActionResult<List<Patient>> GetPatients()
+        public async Task<ActionResult<List<Patient>>> GetPatients()
         {
+            var patients = await _context.Patients.ToListAsync();
             return Ok(patients);
         }
-
+        /*
         [HttpGet("{id}")]
         public ActionResult<Patient> GetPatientById(int id)
         {
@@ -116,5 +128,6 @@ namespace CareBridgeApi.Controllers
             patients.Remove(deletedPatient);
             return NoContent();
         }
+        */
     }
 }
