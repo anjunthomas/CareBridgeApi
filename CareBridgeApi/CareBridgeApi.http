@@ -42,3 +42,29 @@ Content-Type: application/json
 ### 
 
 DELETE {{CareBridgeApi_HostAddress}}/api/patients/6
+
+###
+POST {{CareBridgeApi_HostAddress}}/api/providers
+Content-Type: application/json
+
+{
+  "firstName": "Shadowheart",
+  "lastName": "Hallowleaf",
+  "specialty": "Internal Medicine",
+  "email": "shadowheart.hallowleaf@example.com",
+  "phoneNumber": "555-019-2486"
+}
+
+###
+
+ POST {{CareBridgeApi_HostAddress}}/api/encounters
+Content-Type: application/json
+
+{
+  "patientId": 1,
+  "providerId": 1,
+  "startDateTime": "2026-09-21T10:00:00Z",
+  "encounterType": "Outpatient",
+  "reasonForVisit": "Annual physical",
+  "status": "Completed"
+}

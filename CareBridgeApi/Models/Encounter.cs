@@ -5,11 +5,11 @@
         public int Id { get; set; }
         public int PatientId { get; set; } // foreign key for patient
 
-        public Patient Patient { get; set; } = null!;
+        public Patient? Patient { get; set; }
 
         public int ProviderId { get; set; } // fk for provider
 
-        public Provider Provider { get; set; } = null!;
+        public Provider? Provider { get; set; }
 
         public DateTime StartDateTime { get; set; }
 
