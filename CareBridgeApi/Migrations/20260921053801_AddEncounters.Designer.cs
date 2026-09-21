@@ -3,6 +3,7 @@ using System;
 using CareBridgeApi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CareBridgeApi.Migrations
 {
     [DbContext(typeof(CareBridgeDBContext))]
-    partial class CareBridgeDBContextModelSnapshot : ModelSnapshot
+    [Migration("20260921053801_AddEncounters")]
+    partial class AddEncounters
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -55,10 +58,6 @@ namespace CareBridgeApi.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PatientId");
-
-                    b.HasIndex("ProviderId");
 
                     b.ToTable("Encounters");
                 });
@@ -122,35 +121,6 @@ namespace CareBridgeApi.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Providers");
-                });
-
-            modelBuilder.Entity("CareBridgeApi.Models.Encounter", b =>
-                {
-                    b.HasOne("CareBridgeApi.Models.Patient", "Patient")
-                        .WithMany("Encounters")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("CareBridgeApi.Models.Provider", "Provider")
-                        .WithMany("Encounters")
-                        .HasForeignKey("ProviderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Patient");
-
-                    b.Navigation("Provider");
-                });
-
-            modelBuilder.Entity("CareBridgeApi.Models.Patient", b =>
-                {
-                    b.Navigation("Encounters");
-                });
-
-            modelBuilder.Entity("CareBridgeApi.Models.Provider", b =>
-                {
-                    b.Navigation("Encounters");
                 });
 #pragma warning restore 612, 618
         }

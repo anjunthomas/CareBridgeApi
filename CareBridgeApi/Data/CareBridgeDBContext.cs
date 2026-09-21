@@ -12,5 +12,9 @@ namespace CareBridgeApi.Data
 
         // this is EF Core's representation of the Patients table
         public DbSet<Patient> Patients { get; set; }
+
+        public DbSet<Provider> Providers { get; set; }
+
+        public DbSet<Encounter> Encounters { get; set; }
     }
 }

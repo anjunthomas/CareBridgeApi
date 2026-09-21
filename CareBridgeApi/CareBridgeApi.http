@@ -9,3 +9,36 @@ Accept: application/json
 
 GET {{CareBridgeApi_HostAddress}}/api/patients
 Accept: application/json
+
+###
+
+GET {{CareBridgeApi_HostAddress}}/api/patients/3
+Accept: application/json
+
+###
+POST {{CareBridgeApi_HostAddress}}/api/patients
+Content-Type: application/json
+
+{
+  "firstName": "Astarion",
+  "lastName": "Ancunin",
+  "dateOfBirth": "1913-04-16",
+  "email": "astarion.ancunin@example.com",
+  "phoneNumber": "555-013-7742"
+}
+###
+
+PUT {{CareBridgeApi_HostAddress}}/api/patients/1
+Content-Type: application/json
+
+{
+  "firstName": "Astarion",
+  "lastName": "Ancunin",
+  "dateOfBirth": "1913-04-16",
+  "email": "astarion.ancunin@example.com",
+  "phoneNumber": "555-013-7742"
+}
+
+### 
+
+DELETE {{CareBridgeApi_HostAddress}}/api/patients/6
