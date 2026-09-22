@@ -13,7 +13,7 @@
 
         public DateTime StartDateTime { get; set; }
 
-        public DateTime EndDateTime { get; set; }
+        public DateTime? EndDateTime { get; set; } // only making this optional since the visit could be ongoing
 
         public string EncounterType { get; set; } = string.Empty;
 

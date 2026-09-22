@@ -2,7 +2,6 @@
 using CareBridgeApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Diagnostics.Metrics;
 
 namespace CareBridgeApi.Controllers
 {
@@ -45,7 +44,6 @@ namespace CareBridgeApi.Controllers
         }
 
         [HttpPost]
-        [HttpPost]
         public async Task<ActionResult<Encounter>> CreateEncounter(Encounter newEncounter)
         {
             var patientExists = await _context.Patients
@@ -64,6 +62,12 @@ namespace CareBridgeApi.Controllers
                 return BadRequest("Provider does not exist.");
             }
 
+            if(newEncounter.EndDateTime.HasValue && 
+                newEncounter.EndDateTime <= newEncounter.StartDateTime)
+            {
+                return BadRequest("End time should be after the start time.");
+            }
+
             _context.Encounters.Add(newEncounter);
             await _context.SaveChangesAsync();
 
@@ -72,6 +76,63 @@ namespace CareBridgeApi.Controllers
                 new { id = newEncounter.Id },
                 newEncounter
             );
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Encounter>> UpdateEncounter(int id, Encounter updatedEncounter)
+        {
+            var encounter = await _context.Encounters.FindAsync(id);
+            if (encounter == null)
+            {
+                return NotFound();
+            }
+
+            var patientExists = await _context.Patients
+                .AnyAsync(patient => patient.Id == updatedEncounter.PatientId);
+
+            if (!patientExists)
+            {
+                return BadRequest("This patient doesn't exist");
+            }
+
+            var providerExists = await _context.Providers
+                .AnyAsync(provider => provider.Id == updatedEncounter.ProviderId);
+
+            if (!providerExists)
+            {
+                return BadRequest("This provider doesn't exist");
+            }
+
+            if(updatedEncounter.EndDateTime.HasValue && 
+                updatedEncounter.EndDateTime <= updatedEncounter.StartDateTime)
+            {
+                return BadRequest("End time must be after the start time.");
+            }
+
+            encounter.PatientId = updatedEncounter.PatientId;
+            encounter.ProviderId = updatedEncounter.ProviderId;
+            encounter.StartDateTime = updatedEncounter.StartDateTime;
+            encounter.EndDateTime = updatedEncounter.EndDateTime;
+            encounter.EncounterType = updatedEncounter.EncounterType;
+            encounter.ReasonForVisit = updatedEncounter.ReasonForVisit;
+            encounter.Status = updatedEncounter.Status;
+
+            await _context.SaveChangesAsync();
+            return Ok(encounter);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteEncounter(int id)
+        {
+            var encounter = await _context.Encounters.FindAsync(id);
+            if (encounter == null) 
+            {
+                return NotFound();
+            }
+            _context.Encounters.Remove(encounter);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }

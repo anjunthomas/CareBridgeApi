@@ -71,7 +71,7 @@ namespace CareBridgeApi.Controllers
             patient.PhoneNumber = updatedPatient.PhoneNumber;
 
             await _context.SaveChangesAsync();
-            return NoContent();
+            return Ok(patient);
         }
 
         [HttpDelete("{id}")]
