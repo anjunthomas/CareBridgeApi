@@ -1,7 +1,7 @@
-﻿using CareBridgeApi.Data;
-using CareBridgeApi.Models;
+﻿using CareBridgeApi.Models;
+using CareBridgeApi.Dtos;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using CareBridgeApi.Services;
 
 namespace CareBridgeApi.Controllers
 {
@@ -9,20 +9,19 @@ namespace CareBridgeApi.Controllers
     [ApiController]
     public class EncountersController : ControllerBase
     {
-        private readonly CareBridgeDBContext _context;
+ 
+        private readonly IEncounterService _encounterService;
 
-        public EncountersController(CareBridgeDBContext context)
+        public EncountersController(
+            IEncounterService encounterService)
         {
-            _context = context;
+            _encounterService = encounterService;
         }
 
         [HttpGet]
         public async Task<ActionResult<List<Encounter>>> GetEncounters()
         {
-            var encounters = await _context.Encounters
-                .Include(encounter => encounter.Patient) // also want to retrieve the associated Patient and Provider objects when getting the encounters
-                .Include(encounter => encounter.Provider)
-                .ToListAsync();
+            var encounters = await _encounterService.GetEncountersAsync();
 
             return Ok(encounters);
         }
@@ -30,10 +29,7 @@ namespace CareBridgeApi.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Encounter>> GetEncounterById(int id)
         {
-            var encounter = await _context.Encounters
-                .Include(encounter => encounter.Patient)
-                .Include(encounter => encounter.Provider)
-                .FirstOrDefaultAsync(encounter => encounter.Id == id);
+            var encounter = await _encounterService.GetEncounterByIdAsync(id);
 
             if (encounter == null)
             {
@@ -44,93 +40,54 @@ namespace CareBridgeApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Encounter>> CreateEncounter(Encounter newEncounter)
+        public async Task<ActionResult<Encounter>> CreateEncounter(
+            CreateEncounterDto dto)
         {
-            var patientExists = await _context.Patients
-                .AnyAsync(patient => patient.Id == newEncounter.PatientId);
 
-            if (!patientExists)
+            var result = await _encounterService.CreateEncounterAsync(dto);
+            
+            if(result.Error != null)
             {
-                return BadRequest("Patient does not exist.");
+                return BadRequest(result.Error);
             }
 
-            var providerExists = await _context.Providers
-                .AnyAsync(provider => provider.Id == newEncounter.ProviderId);
-
-            if (!providerExists)
-            {
-                return BadRequest("Provider does not exist.");
-            }
-
-            if(newEncounter.EndDateTime.HasValue && 
-                newEncounter.EndDateTime <= newEncounter.StartDateTime)
-            {
-                return BadRequest("End time should be after the start time.");
-            }
-
-            _context.Encounters.Add(newEncounter);
-            await _context.SaveChangesAsync();
+            var encounter = result.Encounter!;
 
             return CreatedAtAction(
                 nameof(GetEncounterById),
-                new { id = newEncounter.Id },
-                newEncounter
+                new { id = encounter.Id },
+                encounter
             );
         }
-
         [HttpPut("{id}")]
-        public async Task<ActionResult<Encounter>> UpdateEncounter(int id, Encounter updatedEncounter)
+        public async Task<ActionResult<Encounter>> UpdateEncounter(
+            int id,
+            UpdateEncounterDto dto)
         {
-            var encounter = await _context.Encounters.FindAsync(id);
-            if (encounter == null)
+            var result = await _encounterService.UpdateEncounterAsync(id, dto);
+
+            if (result.Encounter == null && result.Error == null)
             {
                 return NotFound();
             }
 
-            var patientExists = await _context.Patients
-                .AnyAsync(patient => patient.Id == updatedEncounter.PatientId);
-
-            if (!patientExists)
+            if (result.Error != null)
             {
-                return BadRequest("This patient doesn't exist");
+                return BadRequest(result.Error);
             }
 
-            var providerExists = await _context.Providers
-                .AnyAsync(provider => provider.Id == updatedEncounter.ProviderId);
-
-            if (!providerExists)
-            {
-                return BadRequest("This provider doesn't exist");
-            }
-
-            if(updatedEncounter.EndDateTime.HasValue && 
-                updatedEncounter.EndDateTime <= updatedEncounter.StartDateTime)
-            {
-                return BadRequest("End time must be after the start time.");
-            }
-
-            encounter.PatientId = updatedEncounter.PatientId;
-            encounter.ProviderId = updatedEncounter.ProviderId;
-            encounter.StartDateTime = updatedEncounter.StartDateTime;
-            encounter.EndDateTime = updatedEncounter.EndDateTime;
-            encounter.EncounterType = updatedEncounter.EncounterType;
-            encounter.ReasonForVisit = updatedEncounter.ReasonForVisit;
-            encounter.Status = updatedEncounter.Status;
-
-            await _context.SaveChangesAsync();
-            return Ok(encounter);
+            return Ok(result.Encounter);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEncounter(int id)
         {
-            var encounter = await _context.Encounters.FindAsync(id);
-            if (encounter == null) 
+            var deleted = await _encounterService.DeleteEncounterAsync(id);
+            
+            if (!deleted)
             {
                 return NotFound();
             }
-            _context.Encounters.Remove(encounter);
-            await _context.SaveChangesAsync();
 
             return NoContent();
         }

@@ -1,5 +1,8 @@
 ﻿namespace CareBridgeApi.Models
 {
+    // this class represents the full database object, inclduing things the client shouldn't directly control
+    // make DTO to represent only the data you want the request to send.
+
     public class Encounter
     {
         public int Id { get; set; }

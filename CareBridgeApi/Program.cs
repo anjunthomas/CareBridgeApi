@@ -1,5 +1,6 @@
 using CareBridgeApi.Data;
 using Microsoft.EntityFrameworkCore;
+using CareBridgeApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,7 @@ builder.Services.AddDbContext<CareBridgeDBContext>(options =>
     )
 );
 
+builder.Services.AddScope<IEncounterService, EncounterService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
