@@ -1,12 +1,5 @@
 @CareBridgeApi_HostAddress = http://localhost:5246
 
-GET {{CareBridgeApi_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
-
-
-
 GET {{CareBridgeApi_HostAddress}}/api/patients
 Accept: application/json
 
@@ -64,6 +57,24 @@ Content-Type: application/json
   "patientId": 1,
   "providerId": 1,
   "startDateTime": "2026-09-21T10:00:00Z",
+  "encounterType": "Outpatient",
+  "reasonForVisit": "Annual physical",
+  "status": "Completed"
+}
+
+###
+
+GET {{CareBridgeApi_HostAddress}}/api/encounters
+Accept: application/json
+
+###
+PUT {{CareBridgeApi_HostAddress}}/api/encounters/1
+Content-Type: application/json
+
+{
+  "providerId": 1,
+  "startDateTime": "2026-09-21T10:00:00Z",
+  "endDateTime": null,
   "encounterType": "Outpatient",
   "reasonForVisit": "Annual physical",
   "status": "Completed"

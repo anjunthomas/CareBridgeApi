@@ -14,23 +14,35 @@ namespace CareBridgeApi.Services
             _context = context;
         }
 
-        public async Task<List<Encounter>> GetEncountersAsync()
+        private IQueryable<EncounterResponseDto> ProjectEncounters() // helper function to convert the Encounter into the encounterResponseDto
         {
-            return await _context.Encounters
-                .Include(encounter => encounter.Patient)
-                .Include(encounter => encounter.Provider)
-                .ToListAsync();
+            return _context.Encounters.Select(encounter => new EncounterResponseDto
+            {
+                Id = encounter.Id,
+                PatientId = encounter.PatientId,
+                PatientName = encounter.Patient!.FirstName + " " + encounter.Patient.LastName,
+                ProviderId = encounter.ProviderId,
+                ProviderName = encounter.Provider!.FirstName + " " + encounter.Provider.LastName,
+                StartDateTime = encounter.StartDateTime,
+                EndDateTime = encounter.EndDateTime,
+                EncounterType = encounter.EncounterType,
+                ReasonForVisit = encounter.ReasonForVisit,
+                Status = encounter.Status
+            });
         }
 
-        public async Task<Encounter?> GetEncounterByIdAsync(int id)
+        public async Task<List<EncounterResponseDto>> GetEncountersAsync()
         {
-            return await _context.Encounters
-                .Include(encounter => encounter.Patient)
-                .Include(encounter => encounter.Provider)
+            return await ProjectEncounters().ToListAsync();
+        }
+
+        public async Task<EncounterResponseDto?> GetEncounterByIdAsync(int id)
+        {
+            return await ProjectEncounters()
                 .FirstOrDefaultAsync(encounter => encounter.Id == id);
         }
 
-        public async Task<(Encounter? Encounter, string? Error)> CreateEncounterAsync(
+        public async Task<(EncounterResponseDto? Encounter, string? Error)> CreateEncounterAsync(
             CreateEncounterDto dto)
         {
 
@@ -70,10 +82,10 @@ namespace CareBridgeApi.Services
             _context.Encounters.Add(encounter);
             await _context.SaveChangesAsync();
 
-            return (encounter, null);
+            return (await GetEncounterByIdAsync(encounter.Id), null);
         }
 
-        public async Task<(Encounter? Encounter, string? Error)> UpdateEncounterAsync(
+        public async Task<(EncounterResponseDto? Encounter, string? Error)> UpdateEncounterAsync(
             int id,
             UpdateEncounterDto dto)
         {
@@ -107,7 +119,7 @@ namespace CareBridgeApi.Services
 
             await _context.SaveChangesAsync();
 
-            return (encounter, null);
+            return (await GetEncounterByIdAsync(id), null);
         }
         public async Task<bool> DeleteEncounterAsync(int id)
         {

@@ -1,18 +1,17 @@
 ﻿using CareBridgeApi.Dtos;
-using CareBridgeApi.Models;
 
 namespace CareBridgeApi.Services
 {
     public interface IEncounterService
     {
-        // task<list<encounter>> = an async operation that will eventually return a list of encounters
-        Task<List<Encounter>> GetEncountersAsync();
-        Task<Encounter?> GetEncounterByIdAsync(int id);
+        // task<list<encounter>> = an async operation that will eventually return a list of encounter responses
+        Task<List<EncounterResponseDto>> GetEncountersAsync();
+        Task<EncounterResponseDto?> GetEncounterByIdAsync(int id);
 
-        Task<(Encounter? Encounter, string? Error)> CreateEncounterAsync(
+        Task<(EncounterResponseDto? Encounter, string? Error)> CreateEncounterAsync(
             CreateEncounterDto dto);
 
-        Task<(Encounter? Encounter, string? Error)> UpdateEncounterAsync(
+        Task<(EncounterResponseDto? Encounter, string? Error)> UpdateEncounterAsync(
             int id,
             UpdateEncounterDto dto);
 

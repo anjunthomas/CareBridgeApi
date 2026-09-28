@@ -16,7 +16,7 @@ builder.Services.AddDbContext<CareBridgeDBContext>(options =>
     )
 );
 
-builder.Services.AddScope<IEncounterService, EncounterService>();
+builder.Services.AddScoped<IEncounterService, EncounterService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

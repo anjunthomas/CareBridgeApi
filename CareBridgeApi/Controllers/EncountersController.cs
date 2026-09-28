@@ -1,5 +1,4 @@
-﻿using CareBridgeApi.Models;
-using CareBridgeApi.Dtos;
+﻿using CareBridgeApi.Dtos;
 using Microsoft.AspNetCore.Mvc;
 using CareBridgeApi.Services;
 
@@ -19,7 +18,7 @@ namespace CareBridgeApi.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Encounter>>> GetEncounters()
+        public async Task<ActionResult<List<EncounterResponseDto>>> GetEncounters()
         {
             var encounters = await _encounterService.GetEncountersAsync();
 
@@ -27,7 +26,7 @@ namespace CareBridgeApi.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Encounter>> GetEncounterById(int id)
+        public async Task<ActionResult<EncounterResponseDto>> GetEncounterById(int id)
         {
             var encounter = await _encounterService.GetEncounterByIdAsync(id);
 
@@ -40,7 +39,7 @@ namespace CareBridgeApi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Encounter>> CreateEncounter(
+        public async Task<ActionResult<EncounterResponseDto>> CreateEncounter(
             CreateEncounterDto dto)
         {
 
@@ -60,7 +59,7 @@ namespace CareBridgeApi.Controllers
             );
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult<Encounter>> UpdateEncounter(
+        public async Task<ActionResult<EncounterResponseDto>> UpdateEncounter(
             int id,
             UpdateEncounterDto dto)
         {
