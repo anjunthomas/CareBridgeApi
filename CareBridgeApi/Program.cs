@@ -19,6 +19,13 @@ builder.Services.AddDbContext<CareBridgeDBContext>(options =>
 builder.Services.AddScoped<IEncounterService, EncounterService>();
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var context = scope.ServiceProvider.GetRequiredService<CareBridgeDBContext>();
+    await DbSeeder.SeedAsync(context);
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
